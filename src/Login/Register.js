@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import Header from "../UI/Header";
 import classes from "./Register.module.css";
 import firebase from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [pswd, setPswd] = useState("");
+  const navigate = useNavigate();
 
   const onNameChange = (event) => {
     setUserName(event.target.value);
@@ -40,6 +42,7 @@ const Register = () => {
           })
           .then(() => {
             alert("User registered!");
+            navigate("/Contact");
           });
       })
       .catch((error) => {

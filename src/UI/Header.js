@@ -1,21 +1,50 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { Link } from 'react-router-dom'
-
-// const navigation = [
-//   { name: 'Dashboard', href: '#', current: false },
-//   { name: 'Team', href: '#', current: false },
-//   { name: 'Projects', href: '#', current: false },
-//   { name: 'Calendar', href: '#', current: false },
-// ]
+import { Fragment, useEffect } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { signInActions } from "../store/auth";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Header() {
+  const auth = getAuth();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        localStorage.removeItem('token');
+        navigate("/Login");
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
+
+   
+
+  useEffect(() => {
+    let isMounted = true;
+    onAuthStateChanged (auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(user);
+        console.log('logged in Header');
+        dispatch(signInActions.signInAction({ userToken: user.accessToken }));
+      } else {
+        localStorage.removeItem('token');
+        console.log("logged out");
+      }
+    });
+    return () => { isMounted = false };
+  }, [auth]);
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -35,13 +64,32 @@ export default function Header() {
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
-                <h2 className="font-medium leading-tight text-4xl mb-2 text-white">Tic Tac Toe</h2>
+                  <h2 className="font-medium leading-tight text-4xl mb-2 text-white">
+                    Tic Tac Toe
+                  </h2>
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
-                  <Link className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium' to="/Register">Register here</Link> |{" "}
-                  <Link className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium' to="/Login">Login</Link>
-                  <Link className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium' to="/Contact">Contact Us</Link>
+                    <Link
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      to="/Register"
+                    >
+                      Register here
+                    </Link>{" "}
+                    |{" "}
+                    <Link
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      to="/Login"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                      to="/Contact"
+                    >
+                      Contact Us
+                    </Link>
+                    <button onClick={onLogout}>Logout</button>
                   </div>
                 </div>
               </div>
@@ -80,7 +128,10 @@ export default function Header() {
                         {({ active }) => (
                           <a
                             href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                           >
                             Your Profile
                           </a>
@@ -90,7 +141,10 @@ export default function Header() {
                         {({ active }) => (
                           <a
                             href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                           >
                             Settings
                           </a>
@@ -100,7 +154,10 @@ export default function Header() {
                         {({ active }) => (
                           <a
                             href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                           >
                             Sign out
                           </a>
@@ -134,5 +191,5 @@ export default function Header() {
         </>
       )}
     </Disclosure>
-  )
+  );
 }

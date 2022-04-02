@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import Header from "../UI/Header";
 import classes from "./Register.module.css";
-import firebase from "../firebase";
+import { addRegistrationData } from "../store/auth";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 
 const Register = () => {
-  const [username, setUserName] = useState("");
+  const [name, setUserName] = useState("");
   const [email, setEmail] = useState("");
-  const [pswd, setPswd] = useState("");
+  const [password, setPswd] = useState("");
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const onNameChange = (event) => {
     setUserName(event.target.value);
   };
@@ -22,37 +25,54 @@ const Register = () => {
     setPswd(event.target.value);
   };
 
-  const postRegisterData = (event) => {
-    event.preventDefault();
-    console.log("I m in PostData");
-    firebase
-      .firestore()
-      .collection("user_master")
-      .doc(email)
-      .get()
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("user_master")
-          .doc(email)
-          .set({
-            id: email,
-            name: username,
-            password: pswd,
-          })
-          .then(() => {
-            alert("User registered!");
-            navigate("/Contact");
-          });
+  const postRegisterData =(event) => {
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user);
+        dispatch(addRegistrationData({email:email, name:name, password:password, uid:user.uid})).then(() => {
+          navigate("/Login");
+        })
       })
       .catch((error) => {
-        alert("Error getting document:", error);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
       });
   };
 
+  // const postRegisterData = (event) => {
+  //   event.preventDefault();
+  //   console.log("I m in PostData");
+  //   firebase
+  //     .firestore()
+  //     .collection("user_master")
+  //     .doc(email)
+  //     .get()
+  //     .then(() => {
+  //       firebase
+  //         .firestore()
+  //         .collection("user_master")
+  //         .doc(email)
+  //         .set({
+  //           id: email,
+  //           name: username,
+  //           password: pswd,
+  //         })
+  //         .then(() => {
+  //           alert("User registered!");
+  //           navigate("/Contact");
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       alert("Error getting document:", error);
+  //     });
+  // };
+
   return (
     <React.Fragment>
-      <Header />
       <div className={`shadow-2xl ${classes.container}`}>
         <form>
           <div className="mb-6 mt-3">
@@ -65,7 +85,7 @@ const Register = () => {
             <input
               type="text"
               id="username"
-              value={username}
+              value={name}
               onChange={onNameChange}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               required
@@ -98,7 +118,7 @@ const Register = () => {
             <input
               type="password"
               id="password"
-              value={pswd}
+              value={password}
               onChange={onPasswordChange}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               required
@@ -144,7 +164,7 @@ const Register = () => {
             </div>
           </div>
           <button
-            type="submit"
+            type="button"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80"
             onClick={postRegisterData}
           >

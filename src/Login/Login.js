@@ -1,43 +1,75 @@
 import React, { useState } from "react";
-import Header from "../UI/Header";
 import classes from "./Login.module.css";
 import firebase from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
+  const auth = getAuth();
   const navigate = useNavigate();
-  const [usernm, setUsernm]=useState('');
-  const [userps, setUserps]=useState('');
+  const [email, setUsernm] = useState("");
+  const [password, setUserps] = useState("");
+  const dispatch = useDispatch();
 
-  const onUserNameChange=(event)=>{
-setUsernm(event.target.value);
+
+  const onUserNameChange = (event) => {
+    setUsernm(event.target.value);
   };
 
-  const onUserPassChange=(event)=>{
+  const onUserPassChange = (event) => {
     setUserps(event.target.value);
-      };
+  };
+
+  const onLogin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+    localStorage.setItem('token', user.accessToken);
+    
+    setTimeout(()=>{
+      navigate("/Main");
+    },1000
+    );
+  })
+  .catch((error) => {
+    console.log(error.message);
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+  }
 
   const getData = async () => {
-    const res = firebase.firestore().collection("user_master");
-    const snapshot = await res
-      .where("id", "==", usernm)
-      .where("password", "==", userps)
-      .get();
-    
-    if (snapshot.empty) {
-      alert("Invalid username/password entered..!");
-      return;
-    }
+    // const res = firebase.firestore().collection("user_master");
+    // const snapshot = await res
+    //   .where("id", "==", usernm)
+    //   .where("password", "==", userps)
+    //   .get();
 
-    snapshot.forEach((doc) => {
-      console.log(doc.data());
-      navigate("/Contact");
-    });
+    // if (snapshot.empty) {
+    //   alert("Invalid username/password entered..!");
+    //   return;
+    // }
+
+    // snapshot.forEach((doc) => {
+    //  let respData =doc.data();
+    //  console.log(respData);
+    //   dispatch(
+    //     signInActions.signInAction({ userId: respData.id, userName: respData.name })
+    //   );
+    //   localStorage.setItem('token', respData.id);
+    //   localStorage.setItem('tokenPass', respData.password);
+      navigate("/Main");
+  // });
+
+
   };
 
   return (
     <React.Fragment>
-      <Header />
       <div className={`w-full max-w-xs ${classes.container}`}>
         <form className="bg-white rounded-xl shadow-2xl px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
@@ -74,7 +106,7 @@ setUsernm(event.target.value);
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
-              onClick={getData}
+              onClick={onLogin}
             >
               Sign In
             </button>

@@ -19,6 +19,8 @@ export default function Header() {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
+        //localStorage.removeItem('token');
+        console.log('Logegd out from Header');
         localStorage.removeItem('token');
         navigate("/Login");
       })
@@ -31,6 +33,7 @@ export default function Header() {
 
   useEffect(() => {
     let isMounted = true;
+    
     onAuthStateChanged (auth, (user) => {
       if (user) {
         const uid = user.uid;
@@ -39,6 +42,7 @@ export default function Header() {
         dispatch(signInActions.signInAction({ userToken: user.accessToken }));
       } else {
         localStorage.removeItem('token');
+        //localStorage.setItem('token','null');
         console.log("logged out");
       }
     });
@@ -89,7 +93,7 @@ export default function Header() {
                     >
                       Contact Us
                     </Link>
-                    <button onClick={onLogout}>Logout</button>
+                    <button style={{color:"white"}} onClick={onLogout}>Logout</button>
                   </div>
                 </div>
               </div>

@@ -1,45 +1,70 @@
-import { createSlice,configureStore } from "@reduxjs/toolkit"; 
+import { createSlice, configureStore } from "@reduxjs/toolkit";
 import firebase from "../firebase";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const InitialAuthState = {
   isSignIn: localStorage.getItem("token") == null ? false : true,
-  userToken:null
+  userToken: null,
 };
 
 export const getLoginDataByUserId = createAsyncThunk(
-  'user/getLoginDataByUserId',
+  "user/getLoginDataByUserId",
   async (userId, thunkAPI) => {
-    const query =  await firebase.firestore().collection('user_master').where("id", "==", localStorage.getItem('token'))
-    .where("password", "==", localStorage.getItem('tokenPass')).get();
+    const query = await firebase
+      .firestore()
+      .collection("user_master")
+      .where("email", "==", localStorage.getItem("token"))
+      .where("password", "==", localStorage.getItem("tokenPass"))
+      .get();
 
-      const snapshot = query.docs[0];
-      const data = snapshot.data();
-      //console.log(data);
+    const snapshot = query.docs[0];
+    const data = snapshot.data();
+    //console.log(data);
 
     return JSON.parse(data);
   }
-)
+);
+
+export const checkUserExists = createAsyncThunk(
+  "user/checkUserExists",
+  async (userEmail, thunkAPI) => {
+    const query = await firebase
+      .firestore()
+      .collection("user_master")
+      .where("email", "==", userEmail)
+      .get();
+
+    
+    if (!query.empty) {
+      console.log("In Thunk Unsuccess- " + query.docs[0].data());  
+      console.log("Invalid user email entered..!");
+        return;
+      }
+      else{
+        console.log("In Thunk Success- " + query);
+      }
+    //return JSON.parse(data);
+  }
+);
 
 export const addRegistrationData = createAsyncThunk(
-  'user/addRegistrationData',
+  "user/addRegistrationData",
   async (registrationData, thunkAPI) => {
-        firebase
-          .firestore()
-          .collection("user_master")
-          .doc(registrationData.uid)
-          .set({
-            email: registrationData.email,
-            name: registrationData.name,
-            password: registrationData.password,
-            uid: registrationData.uid,
-          })
-          .then(() => {
-            //alert("User registered!");
-        
-          });
+    firebase
+      .firestore()
+      .collection("user_master")
+      .doc(registrationData.uid)
+      .set({
+        email: registrationData.email,
+        name: registrationData.name,
+        password: registrationData.password,
+        uid: registrationData.uid,
+      })
+      .then(() => {
+        //alert("User registered!");
+      });
   }
-)
+);
 
 export const authSlice = createSlice({
   initialState: InitialAuthState,
@@ -48,15 +73,15 @@ export const authSlice = createSlice({
     signInAction: (state, action) => {
       state.isSignIn = true;
       state.userToken = action.payload.userToken;
-    },    
+    },
   },
-  extraReducers:(builder)=>{
+  extraReducers: (builder) => {
     builder.addCase(getLoginDataByUserId.fulfilled, (state, action) => {
       state.isSignIn = true;
       state.userId = action.payload.userId;
       state.userName = action.payload.userName;
-  })
-  }
+    });
+  },
 });
 
 const store = configureStore({

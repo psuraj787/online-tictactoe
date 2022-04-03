@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import Header from "../UI/Header";
 import classes from "./Register.module.css";
-import { addRegistrationData } from "../store/auth";
+import { addRegistrationData,checkUserExists } from "../store/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -27,6 +26,9 @@ const Register = () => {
 
   const postRegisterData =(event) => {
     const auth = getAuth();
+
+    dispatch(checkUserExists(email));
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 

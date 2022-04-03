@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Header from "../UI/Header";
 import { getAuth,onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const Main = () => {
+  console.log('on main');
   const auth = getAuth();
 const [uid, setUid]=useState(null);
-
+const navigate = useNavigate();
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUid(user.uid);
         // ...
       } else {
-        localStorage.setItem('token',null);
+       // localStorage.setItem('token','null');
         console.log('logged out');
+        //navigate("/Login");
       }
     });
     

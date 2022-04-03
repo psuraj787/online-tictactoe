@@ -32,7 +32,7 @@ const Login = () => {
     
     setTimeout(()=>{
       navigate("/Main");
-    },1000
+    },100
     );
   })
   .catch((error) => {
@@ -62,7 +62,7 @@ const Login = () => {
     //   );
     //   localStorage.setItem('token', respData.id);
     //   localStorage.setItem('tokenPass', respData.password);
-      navigate("/Main");
+      //navigate("/Main");
   // });
 
 

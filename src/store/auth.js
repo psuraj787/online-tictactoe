@@ -48,6 +48,10 @@ export const authSlice = createSlice({
     signInAction: (state, action) => {
       state.isSignIn = true;
       state.userToken = action.payload.userToken;
+    },
+    signOutAction: (state, action) => {
+      state.isSignIn = false;
+      state.userToken = null;
     },    
   },
   extraReducers:(builder)=>{

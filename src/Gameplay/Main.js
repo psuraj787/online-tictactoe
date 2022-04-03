@@ -12,7 +12,7 @@ const [uid, setUid]=useState(null);
         setUid(user.uid);
         // ...
       } else {
-        localStorage.setItem('token',null);
+       // localStorage.setItem('token',null);
         console.log('logged out');
       }
     });

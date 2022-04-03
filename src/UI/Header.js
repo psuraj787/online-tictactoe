@@ -19,6 +19,7 @@ export default function Header() {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
+        dispatch(signInActions.signOutAction());
         localStorage.removeItem('token');
         navigate("/Login");
       })
@@ -27,22 +28,24 @@ export default function Header() {
       });
   };
 
-   
+   let firsttime = true;
 
   useEffect(() => {
-    let isMounted = true;
-    onAuthStateChanged (auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log(user);
-        console.log('logged in Header');
-        dispatch(signInActions.signInAction({ userToken: user.accessToken }));
-      } else {
-        localStorage.removeItem('token');
-        console.log("logged out");
-      }
-    });
-    return () => { isMounted = false };
+    if (firsttime) {
+      onAuthStateChanged (auth, (user) => {
+        if (user) {
+          const uid = user.uid;
+          console.log(user);
+          console.log('logged in Header');
+          dispatch(signInActions.signInAction({ userToken: user.accessToken }));
+        } else {
+          dispatch(signInActions.signOutAction());
+          localStorage.removeItem('token');
+          console.log("logged out");
+        }
+      });
+      firsttime = false;
+    }
   }, [auth]);
 
   return (

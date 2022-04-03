@@ -27,29 +27,24 @@ function App() {
   return (
     <div>
 
-<BrowserRouter>
 <Header />
-      <Routes>        
-        <Route path="/" element={<App />} />
-        <Route path="Login" element={<Login />} />
+<Routes>        
+        {/* <Route path="/" element={<App />} /> */}
+        {console.log(isSignedIn )}
+        {console.log(localStorage.getItem('token') !== null)}
+        <Route path="Login" element={isSignedIn ? (
+            <Navigate to="/Main" />
+          ) : (
+            <Login />
+          )} />
         <Route path="Register" element={<Register />} />
         <Route path="Contact" element={<Contact />} />
-        {console.log(isSignedIn && localStorage.getItem('token') !== 'null')}
-        <Route path="Main" element={isSignedIn && localStorage.getItem('token') !== 'null' ? (
+        <Route path="Main" element={isSignedIn ? (
             <Main />
           ) : (
             <Navigate to="/Login" />
           )} />
-        <Route
-          path="*"
-          element={
-            <main style={{ padding: "1rem" }}>
-              <p>There's nothing here!</p>
-            </main>
-          }
-        />
       </Routes>
-    </BrowserRouter>
     </div>
   );
 }

@@ -1,0 +1,66 @@
+user_master
+
+user_online     uid     name
+                        email
+                        uid
+                        inGame : true
+
+/////// For Creating User on Firebase document
+// const postRegisterData = (event) => {
+  //   event.preventDefault();
+  //   console.log("I m in PostData");
+  //   firebase
+  //     .firestore()
+  //     .collection("user_master")
+  //     .doc(email)
+  //     .get()
+  //     .then(() => {
+  //       firebase
+  //         .firestore()
+  //         .collection("user_master")
+  //         .doc(email)
+  //         .set({
+  //           id: email,
+  //           name: username,
+  //           password: pswd,
+  //         })
+  //         .then(() => {
+  //           alert("User registered!");
+  //           navigate("/Contact");
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       alert("Error getting document:", error);
+  //     });
+  // };
+
+
+
+
+  ///////////////For fetching data from collection
+
+  //const getData = async () => {
+    // const res = firebase.firestore().collection("user_master");
+    // const snapshot = await res
+    //   .where("id", "==", usernm)
+    //   .where("password", "==", userps)
+    //   .get();
+
+    // if (snapshot.empty) {
+    //   alert("Invalid username/password entered..!");
+    //   return;
+    // }
+
+    // snapshot.forEach((doc) => {
+    //  let respData =doc.data();
+    //  console.log(respData);
+    //   dispatch(
+    //     signInActions.signInAction({ userId: respData.id, userName: respData.name })
+    //   );
+    //   localStorage.setItem('token', respData.id);
+    //   localStorage.setItem('tokenPass', respData.password);
+    //  navigate("/Main");
+  // });
+
+
+  //};

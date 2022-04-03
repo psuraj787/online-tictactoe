@@ -39,31 +39,7 @@ const Login = () => {
   });
   }
 
-  //const getData = async () => {
-    // const res = firebase.firestore().collection("user_master");
-    // const snapshot = await res
-    //   .where("id", "==", usernm)
-    //   .where("password", "==", userps)
-    //   .get();
-
-    // if (snapshot.empty) {
-    //   alert("Invalid username/password entered..!");
-    //   return;
-    // }
-
-    // snapshot.forEach((doc) => {
-    //  let respData =doc.data();
-    //  console.log(respData);
-    //   dispatch(
-    //     signInActions.signInAction({ userId: respData.id, userName: respData.name })
-    //   );
-    //   localStorage.setItem('token', respData.id);
-    //   localStorage.setItem('tokenPass', respData.password);
-    //  navigate("/Main");
-  // });
-
-
-  //};
+  
 
   return (
     <React.Fragment>

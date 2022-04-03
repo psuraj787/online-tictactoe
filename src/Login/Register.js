@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import Header from "../UI/Header";
 import classes from "./Register.module.css";
-import { addRegistrationData,checkUserExists } from "../store/auth";
+import { addRegistrationData, checkUserExists } from "../store/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
 
 const Register = () => {
   const [name, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPswd] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onNameChange = (event) => {
@@ -25,60 +25,51 @@ const Register = () => {
     setPswd(event.target.value);
   };
 
-  const postRegisterData =(event) => {
-    const auth = getAuth();
-
-    dispatch(checkUserExists(email)).then((result)=>{
-      // user already exist
-      if(result.payload) {
-
-      } else {
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-          dispatch(addRegistrationData({email:email, name:name, password:password, uid:user.uid})).then(() => {
-            navigate("/Login");
-          })
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // ..
-        });
-      }
-    });
-
-    
+  const onConfirmPasword = (event) => {
+    setConfirmPassword(event.target.value);
   };
 
-  // const postRegisterData = (event) => {
-  //   event.preventDefault();
-  //   console.log("I m in PostData");
-  //   firebase
-  //     .firestore()
-  //     .collection("user_master")
-  //     .doc(email)
-  //     .get()
-  //     .then(() => {
-  //       firebase
-  //         .firestore()
-  //         .collection("user_master")
-  //         .doc(email)
-  //         .set({
-  //           id: email,
-  //           name: username,
-  //           password: pswd,
-  //         })
-  //         .then(() => {
-  //           alert("User registered!");
-  //           navigate("/Contact");
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       alert("Error getting document:", error);
-  //     });
-  // };
+  const onAcceptTC = (event) => {
+    setAcceptTerms(!acceptTerms);
+  };
+
+  const postRegisterData = () => {
+    console.log(acceptTerms);
+    if (password.length>0 && password === confirmPassword && acceptTerms) {
+      const auth = getAuth();
+
+      dispatch(checkUserExists(email)).then((result) => {
+        // user already exist
+        if (result.payload) {
+        } else {
+          createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              // Signed in
+              const user = userCredential.user;
+              dispatch(
+                addRegistrationData({
+                  email: email,
+                  name: name,
+                  password: password,
+                  uid: user.uid,
+                })
+              ).then(() => {
+                navigate("/Login");
+              });
+            })
+            .catch((error) => {
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              // ..
+            });
+        }
+      });
+    } else {
+      alert(
+        "Accept terms and conditions & confirm password!"
+      );
+    }
+  };
 
   return (
     <React.Fragment>
@@ -143,9 +134,16 @@ const Register = () => {
             <input
               type="password"
               id="repeat-password"
+              value={confirmPassword}
+              onChange={onConfirmPasword}
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               required
             />
+            {password !== confirmPassword && confirmPassword.length > 0 && (
+              <p class="text-red-500 text-xs italic">
+                *Password confirmation does not match
+              </p>
+            )}
           </div>
           <div className="flex items-start mb-6">
             <div className="flex items-center h-5">
@@ -153,6 +151,7 @@ const Register = () => {
                 id="terms"
                 aria-describedby="terms"
                 type="checkbox"
+                onClick={onAcceptTC}
                 className="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
                 required
               />

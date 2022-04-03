@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../UI/Header";
 import classes from "./Register.module.css";
-import { addRegistrationData } from "../store/auth";
+import { addRegistrationData,checkUserExists } from "../store/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -27,20 +27,29 @@ const Register = () => {
 
   const postRegisterData =(event) => {
     const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        console.log(user);
-        dispatch(addRegistrationData({email:email, name:name, password:password, uid:user.uid})).then(() => {
-          navigate("/Login");
+
+    dispatch(checkUserExists(email)).then((result)=>{
+      // user already exist
+      if(result.payload) {
+
+      } else {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          dispatch(addRegistrationData({email:email, name:name, password:password, uid:user.uid})).then(() => {
+            navigate("/Login");
+          })
         })
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-      });
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // ..
+        });
+      }
+    });
+
+    
   };
 
   // const postRegisterData = (event) => {

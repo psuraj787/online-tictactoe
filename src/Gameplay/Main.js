@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Header from "../UI/Header";
 import { getAuth,onAuthStateChanged } from "firebase/auth";
+import { useSelector } from "react-redux";
 
 const Main = () => {
-  const auth = getAuth();
 const [uid, setUid]=useState(null);
 
+const authUid = useSelector((state) => state.auth.uid);
+
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUid(user.uid);
-        // ...
-      } else {
-       // localStorage.setItem('token',null);
-        console.log('logged out');
-      }
-    });
-    
-  }, [auth]);
+  setUid(authUid);     
+  }, [authUid]);
 
   return (
     <React.Fragment>

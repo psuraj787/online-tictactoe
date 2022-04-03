@@ -37,11 +37,11 @@ export default function Header() {
           const uid = user.uid;
           console.log(user);
           console.log('logged in Header');
-          dispatch(signInActions.signInAction({ userToken: user.accessToken }));
+          dispatch(signInActions.signInAction({ userToken: user.accessToken, uid: uid }));
         } else {
           dispatch(signInActions.signOutAction());
           localStorage.removeItem('token');
-          console.log("logged out");
+          //console.log("logged out");
         }
       });
       firsttime = false;
@@ -92,7 +92,7 @@ export default function Header() {
                     >
                       Contact Us
                     </Link>
-                    <button onClick={onLogout}>Logout</button>
+                    <button style={{color:"white"}} onClick={onLogout}>Logout</button>
                   </div>
                 </div>
               </div>

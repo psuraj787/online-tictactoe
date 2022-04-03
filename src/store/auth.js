@@ -15,11 +15,30 @@ export const getLoginDataByUserId = createAsyncThunk(
 
       const snapshot = query.docs[0];
       const data = snapshot.data();
-      //console.log(data);
 
     return JSON.parse(data);
   }
 )
+
+export const checkUserExists = createAsyncThunk(
+  "user/checkUserExists",
+  async (userEmail, thunkAPI) => {
+    const query = await firebase
+      .firestore()
+      .collection("user_master")
+      .where("email", "==", userEmail)
+      .get();
+
+
+    if (!query.empty) {
+        return true;
+      }
+      else{
+        return false;
+      }
+    //return JSON.parse(data);
+  }
+);
 
 export const addRegistrationData = createAsyncThunk(
   'user/addRegistrationData',
@@ -48,10 +67,12 @@ export const authSlice = createSlice({
     signInAction: (state, action) => {
       state.isSignIn = true;
       state.userToken = action.payload.userToken;
+      state.uid = action.payload.uid;
     },
     signOutAction: (state, action) => {
       state.isSignIn = false;
       state.userToken = null;
+      state.uid = null;
     },    
   },
   extraReducers:(builder)=>{

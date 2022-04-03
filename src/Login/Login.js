@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import classes from "./Login.module.css";
-import firebase from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
@@ -11,7 +8,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setUsernm] = useState("");
   const [password, setUserps] = useState("");
-  const dispatch = useDispatch();
+
 
 
   const onUserNameChange = (event) => {
@@ -27,7 +24,7 @@ const Login = () => {
   .then((userCredential) => {
     // Signed in 
     const user = userCredential.user;
-    console.log(user);
+    
     localStorage.setItem('token', user.accessToken);
     
     setTimeout(()=>{
@@ -37,40 +34,16 @@ const Login = () => {
   })
   .catch((error) => {
     console.log(error.message);
-    const errorCode = error.code;
-    const errorMessage = error.message;
+    //const errorCode = error.code;
+    //const errorMessage = error.message;
   });
   }
 
-  const getData = async () => {
-    // const res = firebase.firestore().collection("user_master");
-    // const snapshot = await res
-    //   .where("id", "==", usernm)
-    //   .where("password", "==", userps)
-    //   .get();
-
-    // if (snapshot.empty) {
-    //   alert("Invalid username/password entered..!");
-    //   return;
-    // }
-
-    // snapshot.forEach((doc) => {
-    //  let respData =doc.data();
-    //  console.log(respData);
-    //   dispatch(
-    //     signInActions.signInAction({ userId: respData.id, userName: respData.name })
-    //   );
-    //   localStorage.setItem('token', respData.id);
-    //   localStorage.setItem('tokenPass', respData.password);
-      navigate("/Main");
-  // });
-
-
-  };
+  
 
   return (
     <React.Fragment>
-      <div className={`w-full max-w-xs ${classes.container}`}>
+      <div className={` ${classes.container}`}>
         <form className="bg-white rounded-xl shadow-2xl px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
             <label
@@ -110,12 +83,12 @@ const Login = () => {
             >
               Sign In
             </button>
-            <a
+            {/* <a
               className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
               href="#"
             >
               Forgot Password?
-            </a>
+            </a> */}
           </div>
         </form>
         <p className="text-center text-gray-500 text-xs">

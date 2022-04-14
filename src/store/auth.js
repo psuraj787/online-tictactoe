@@ -1,24 +1,44 @@
-import { createSlice,configureStore } from "@reduxjs/toolkit"; 
+import { createSlice, configureStore } from "@reduxjs/toolkit";
 import firebase from "../firebase";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const InitialAuthState = {
   isSignIn: localStorage.getItem("token") == null ? false : true,
-  userToken:null
+  userToken: null,
 };
 
+// export const getInGameData = createAsyncThunk(
+//   "user/getInGameData",
+//   async (userId, thunkAPI) => {
+//     const query = await firebase
+//       .firestore()
+//       .collection("user_online")
+//       .where("uid", "!=", userId)
+//       .get();
+//     const resultArr = [];
+//     query.forEach((doc) => {
+//       resultArr.push(doc.data());
+//     });
+
+//     return resultArr;
+//   }
+// );
+
 export const getLoginDataByUserId = createAsyncThunk(
-  'user/getLoginDataByUserId',
+  "user/getLoginDataByUserId",
   async (userId, thunkAPI) => {
-    const query =  await firebase.firestore().collection('user_master').where("id", "==", localStorage.getItem('token'))
-    .where("password", "==", localStorage.getItem('tokenPass')).get();
+    const query = await firebase
+      .firestore()
+      .collection("user_master")
+      .where("uid", "==", userId)
+      .get();
 
-      const snapshot = query.docs[0];
-      const data = snapshot.data();
+    const snapshot = query.docs[0];
+    const data = snapshot.data();
 
-    return JSON.parse(data);
+    return data;
   }
-)
+);
 
 export const checkUserExists = createAsyncThunk(
   "user/checkUserExists",
@@ -29,36 +49,52 @@ export const checkUserExists = createAsyncThunk(
       .where("email", "==", userEmail)
       .get();
 
-
     if (!query.empty) {
-        return true;
-      }
-      else{
-        return false;
-      }
+      return true;
+    } else {
+      return false;
+    }
     //return JSON.parse(data);
   }
 );
 
 export const addRegistrationData = createAsyncThunk(
-  'user/addRegistrationData',
+  "user/addRegistrationData",
   async (registrationData, thunkAPI) => {
-        firebase
-          .firestore()
-          .collection("user_master")
-          .doc(registrationData.uid)
-          .set({
-            email: registrationData.email,
-            name: registrationData.name,
-            password: registrationData.password,
-            uid: registrationData.uid,
-          })
-          .then(() => {
-            //alert("User registered!");
-        
-          });
+    firebase
+      .firestore()
+      .collection("user_master")
+      .doc(registrationData.uid)
+      .set({
+        email: registrationData.email,
+        name: registrationData.name,
+        password: registrationData.password,
+        uid: registrationData.uid,
+      })
+      .then(() => {
+        //alert("User registered!");
+      });
   }
-)
+);
+
+export const addInGameData = createAsyncThunk(
+  "user/addInGameData",
+  async (inGameData, thunkAPI) => {
+    firebase
+      .firestore()
+      .collection("user_online")
+      .doc(inGameData.uid)
+      .set({
+        email: inGameData.email,
+        name: inGameData.name,
+        ingame: false,
+        uid: inGameData.uid,
+      })
+      .then(() => {
+        //alert("User registered!");
+      });
+  }
+);
 
 export const authSlice = createSlice({
   initialState: InitialAuthState,
@@ -73,15 +109,15 @@ export const authSlice = createSlice({
       state.isSignIn = false;
       state.userToken = null;
       state.uid = null;
-    },    
+    },
   },
-  extraReducers:(builder)=>{
+  extraReducers: (builder) => {
     builder.addCase(getLoginDataByUserId.fulfilled, (state, action) => {
       state.isSignIn = true;
       state.userId = action.payload.userId;
       state.userName = action.payload.userName;
-  })
-  }
+    });
+  },
 });
 
 const store = configureStore({

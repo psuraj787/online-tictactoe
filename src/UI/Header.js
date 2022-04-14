@@ -35,8 +35,8 @@ export default function Header() {
       onAuthStateChanged (auth, (user) => {
         if (user) {
           const uid = user.uid;
-          console.log(user);
-          console.log('logged in Header');
+          //console.log(user);
+          // console.log('logged in Header');
           dispatch(signInActions.signInAction({ userToken: user.accessToken, uid: uid }));
         } else {
           dispatch(signInActions.signOutAction());

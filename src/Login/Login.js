@@ -9,8 +9,6 @@ const Login = () => {
   const [email, setUsernm] = useState("");
   const [password, setUserps] = useState("");
 
-
-
   const onUserNameChange = (event) => {
     setUsernm(event.target.value);
   };
@@ -21,29 +19,26 @@ const Login = () => {
 
   const onLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    
-    localStorage.setItem('token', user.accessToken);
-    
-    setTimeout(()=>{
-      navigate("/Main");
-    },1000
-    );
-  })
-  .catch((error) => {
-    console.log(error.message);
-    //const errorCode = error.code;
-    //const errorMessage = error.message;
-  });
-  }
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+        localStorage.setItem("token", user.accessToken);
 
-  
+        setTimeout(() => {
+          navigate("/Main");
+        }, 1000);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        //const errorCode = error.code;
+        //const errorMessage = error.message;
+      });
+  };
 
   return (
     <React.Fragment>
-      <div className={` ${classes.container}`}>
+      <div className={`${classes.container}`}>
         <form className="bg-white rounded-xl shadow-2xl px-8 pt-6 pb-8 mb-4">
           <div className="mb-4">
             <label
